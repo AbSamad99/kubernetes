@@ -1,0 +1,16 @@
+version: "3"
+
+tasks:
+  namespace-01-cli:
+      cmds:
+        - kubectl create namespace namespace-from-cli
+      desc: Create the namespace directly from the cli
+  namespace-02-cli:
+      cmds:
+        - kubectl apply -f namespace.yaml
+      desc: Create the namespace using the namespace.yaml file
+  namespace-03-delete:
+    cmds:
+      - kubectl delete namespace namespace-from-cli
+      - kubectl delete -f namespace.yaml
+    desc: Delete both the created namespaces

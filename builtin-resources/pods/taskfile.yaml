@@ -1,0 +1,49 @@
+version: "3"
+
+env:
+  BORDER: double
+  BORDER_FOREGROUND: "212"
+  PADDING: "1 1"
+  MARGIN: "1 1"
+  NAMESPACE: pod-namespac
+
+tasks:
+  01-create-namespace:
+    desc: "Apply the namespace and set it as default"
+    cmds:
+      - kubectl apply -f namespace.yaml
+      - kubens ${NAMESPACE}
+
+  02-wrong-way-create:
+    desc: "Create a pod the wrong way"
+    cmds:
+      - cmd: gum style "🚨 PLEASE DO NOT DO THIS 🚨"
+        silent: true
+      - kubectl run --image=nginx:1.26.0 -n ${NAMESPACE} wrong-way
+
+  03-simple-apply:
+    desc: "Apply the simple nginx configuration"
+    cmds:
+      - kubectl apply -n ${NAMESPACE} -f pod-nginx-simple.yaml
+
+  04-simple-port-forward:
+    desc: "Port forward simple"
+    cmds:
+      - kubectl port-forward -n ${NAMESPACE} nginx-simple 8080:80
+
+  05-improved-apply:
+    desc: "Apply the improved nginx configuration"
+    cmds:
+      - kubectl apply -n ${NAMESPACE} -f pod-nginx-improved.yaml
+
+  06-improved-port-forward:
+    desc: "Port forward to the improved nginx configuration"
+    cmds:
+      - kubectl port-forward -n ${NAMESPACE} nginx-improved 8080:8080
+
+  07-delete-namespace:
+    desc: "Delete the namespace to clean up"
+    cmds:
+      - cmd: gum style "🚨 Deleting the namespace recursively deletes the resources inside of it! 🚨 "
+        silent: true
+      - kubectl delete -f namespace.yaml
