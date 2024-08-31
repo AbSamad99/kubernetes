@@ -1,0 +1,27 @@
+version: "3"
+
+env:
+  NAMESPACE: replica-ns
+
+tasks:
+  01-create-namespace:
+    desc: "Apply namespace and set as default"
+    cmds:
+      - kubectl apply -f namespace.yaml
+      - kubens ${NAMESPACE}
+
+  02-replica-apply:
+    desc: "Apply the ReplicaSet file"
+    cmds:
+      - kubectl apply -f replica-set.yaml
+
+  03-delete-pods:
+    desc: "Delete all the pods! (they will be automatically recreated)"
+    cmds:
+      - kubectl delete pods --all
+      - watch "kubectl get pods"
+
+  04-delete-namespace:
+    desc: "Delete the namespace to clean up"
+    cmds:
+      - kubectl delete -f namespace.yaml

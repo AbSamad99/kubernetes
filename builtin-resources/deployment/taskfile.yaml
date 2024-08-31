@@ -1,0 +1,36 @@
+version: "3"
+
+env:
+  NAMESPACE: deployment-ns
+
+tasks:
+  01-create-namespace:
+    desc: "Apply namespace and set as default"
+    cmds:
+      - kubectl apply -f namespace.yaml
+      - kubens ${NAMESPACE}
+
+  02-deployment-apply:
+    desc: "Apply the deployment file"
+    cmds:
+      - kubectl apply -f deployment.yaml
+
+  03-rollout-restart:
+    desc: "Rolls through the pods in the deployment and restarts them one-by-one"
+    cmds:
+      - kubectl rollout restart deployment nginx-improved-cluster
+      - watch "kubectl get pods"
+    # NOTE 1: Run 'kubectl get rs' before and after this command to see that kubernetes has created a new replica set for the new deployments.
+    # NOTE 2: Modifying the specification in the deployment.yaml and then running the second task again will also trigger the rollout.
+
+  04-rollout-undo:
+    desc: "Perform a rollback to the previous version of the deployment"
+    cmds:
+      - kubectl get rs
+      - kubectl rollout undo deployment nginx-improved-cluster
+      - kubectl get rs
+
+  05-delete-namespace:
+    desc: "Delete the namespace to clean up"
+    cmds:
+      - kubectl delete -f namespace.yaml

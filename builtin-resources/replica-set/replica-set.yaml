@@ -1,0 +1,19 @@
+# You will almost never use ReplicaSet in a real scenario. Use deployments instead, they internally create the ReplicaSet
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: nginx-simple-cluster
+  namespace: replica-ns
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx # This should match the label you define below
+  template:
+    metadata:
+      labels:
+        app: nginx # Label which is matched to the deployment above
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.26.0
