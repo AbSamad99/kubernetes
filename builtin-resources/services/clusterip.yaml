@@ -1,0 +1,33 @@
+# This component essentially allows you to route traffic to the pods. As there are 3 replicas of the container defined in the deployment, the service will perform load balancing accross them as seen below
+#                    |
+#                    |
+#         +----------------------+
+#         |   ClusterIP Service  |
+#         |   (app: nginx)       |
+#         +----------+-----------+
+#                    |
+#    ----------------|----------------
+#    |               |               |
+# +---------+   +---------+   +---------+
+# | Pod 1   |   | Pod 2   |   | Pod 3   |
+# | (nginx) |   | (nginx) |   | (nginx) |
+# | app:    |   | app:    |   | app:    |
+# | nginx   |   | nginx   |   | nginx   |
+# +---------+   +---------+   +---------+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-clusterip
+  labels:
+    foo: service-label # Do not get confused and attempt to match with this
+  annotations:
+    bar: service-annotation # Do not get confused and attempt to match with this
+spec:
+  type: ClusterIP
+  selector:
+    app: nginx # This line should match the one defined in the labels section of deployment template
+  ports:
+    - protocol: TCP
+      port: 80 # Port which this service is listening on
+      targetPort: 80 # Port the container is listening on

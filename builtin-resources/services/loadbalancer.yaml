@@ -1,0 +1,13 @@
+# This will use the CCM to contact your cloud provider to provision the loadbalancer and provide you with the ip to use. Since I have the free gcloud credits I can make use of them to try this
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-loadbalancer
+spec:
+  type: LoadBalancer # Will only work if cluster is configured to provision one from an external source
+  selector:
+    app: nginx # This line should match the one defined in the labels section of deployment template
+  ports:
+    - protocol: TCP
+      port: 80 # Port which this service is listening on
+      targetPort: 80 # Port the container is listening on

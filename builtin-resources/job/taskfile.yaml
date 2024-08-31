@@ -1,0 +1,33 @@
+version: "3"
+
+env:
+  NAMESPACE: job-ns
+
+tasks:
+  01-create-namespace:
+    desc: "Create a namespace for these examples and set as default"
+    cmds:
+      - kubectl apply -f Namespace.yaml
+      - kubens ${NAMESPACE}
+
+  02-apply-pod:
+    desc: "Apply the pod"
+    cmds:
+      - kubectl apply -f pod.yaml
+    # To see the output of this pod, run `kubectl logs <pod-name>`
+
+  03-apply-simple-job:
+    desc: "Apply the simple job"
+    cmds:
+      - kubectl apply -f simple-job.yaml
+
+  04-apply-improved-job:
+    desc: "Apply the improved job"
+    cmds:
+      - kubectl apply -f improved-job.yaml
+      # You should see 2 pods for this job when you run `kubectl get pods`.
+
+  05-delete-namespace:
+    desc: "Delete the namespace to clean up"
+    cmds:
+      - kubectl delete -f Namespace.yaml

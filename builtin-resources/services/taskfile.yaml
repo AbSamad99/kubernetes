@@ -1,0 +1,46 @@
+version: "3"
+
+env:
+  NAMESPACE: service-ns
+  BORDER: double
+  BORDER_FOREGROUND: "212"
+  PADDING: "1 1"
+  MARGIN: "1 1"
+
+tasks:
+  01-create-namespace:
+    desc: "Apply namespace and set as default"
+    cmds:
+      - kubectl apply -f namespace.yaml
+      - kubens ${NAMESPACE}
+
+  02-deployment-apply:
+    desc: "Apply the deployment file"
+    cmds:
+      - kubectl apply -f deployment.yaml
+
+  03-deploy-clusterip:
+    desc: "Apply the clusterip file"
+    cmds:
+      - kubectl apply -f clusterip.yaml
+    # NOTE: To verify if it is working, within the service-ns namespace create a temporary pod using: `kubectl run curl-pod -it --rm --image=curlimages/curl --command sh`.
+    # Then run the following command: 'curl nginx-clusterip:80'. If the ClusterIP service is working, you should see nginx html in the cli.
+    # To access the service outside of the namespace run: `curl nginx-clusterip.service-ns.svc.cluster.local:80`.
+
+  04-deploy-nodeport:
+    desc: "Apply the nodeport file"
+    cmds:
+      - kubectl apply -f nodeport.yaml
+      - cmd: gum style "💡 Add a firewall rule to allow inbound traffic for nodeport port!"
+        silent: true
+
+  05-apply-loadbalancer:
+    desc: "Apply the loadbalancer file"
+    cmds:
+      - kubectl apply -f loadbalancer.yaml
+    # NOTE: If you are running this in KinD, you will have to run the additional step defined in the simple-setup directory in order to simulate load balancing service.
+
+  06-delete-namespace:
+    desc: "Delete the namespace to clean up"
+    cmds:
+      - kubectl delete -f namespace.yaml

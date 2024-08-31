@@ -1,0 +1,14 @@
+# A job allows you to run a process to completion. This is great for running task that you want to occur a set number of times but which you dont want to persist for too long.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: simple-job
+spec:
+  template:
+    spec:
+      containers:
+        - name: date-pod
+          image: busybox:1.36.1
+          command: ["date"]
+      restartPolicy: Never
+  backoffLimit: 1 # Number of times to retry the job if any error occurs

@@ -1,0 +1,13 @@
+# Simply runs the date command and terminates
+apiVersion: v1
+kind: Pod
+metadata:
+  name: date-pod
+  labels:
+    name: date-pod
+spec:
+  containers:
+    - name: date-pod
+      image: busybox:1.36.1
+      command: ["date"]
+  restartPolicy: Never # self explainatory
