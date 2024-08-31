@@ -1,0 +1,23 @@
+version: "3"
+
+env:
+  NAMESPACE: daemon-set-ns
+
+tasks:
+  01-create-namespace:
+    desc: "Apply namespace and set as default"
+    cmds:
+      - kubectl apply -f namespace.yaml
+      - kubens ${NAMESPACE}
+
+  02-apply-daemon-set:
+    desc: "Apply the daemon-set"
+    cmds:
+      - kubectl apply -f daemon-set.yaml
+      - watch "kubectl get pods -o wide" # Will allow us to see the nodes on which each container is running
+    # Hit Ctrl+C to come out of the watch command
+
+  03-delete-namespace:
+    desc: "Delete the namespace to clean up"
+    cmds:
+      - kubectl delete -f namespace.yaml

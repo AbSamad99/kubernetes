@@ -1,0 +1,10 @@
+# Rather than mapping key-values, you can also define the config as a file. You can then use volumes to save the contents of each of the entries here as a separate file. Check the pod.yaml file.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-files
+data:
+  conf.yaml: |
+    NAME: YourAppName
+    VERSION: 1.0.0
+    AUTHOR: YourName

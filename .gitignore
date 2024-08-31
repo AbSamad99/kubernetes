@@ -1,5 +1,6 @@
 # Devbox Config
 .devbox
+bin
 
 # KinD Config
 kind-config.yaml

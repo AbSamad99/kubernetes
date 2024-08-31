@@ -1,0 +1,9 @@
+# Simple mapping of key-values. Can be consumed in multiple ways
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-property
+data:
+  NAME: YourAppName
+  VERSION: 1.0.0
+  AUTHOR: YourName

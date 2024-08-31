@@ -1,0 +1,39 @@
+version: "3"
+
+env:
+  NAMESPACE: configmap-ns
+
+tasks:
+  01-create-namespace:
+    desc: "Apply namespace and set as default"
+    cmds:
+      - kubectl apply -f namespace.yaml
+      - kubens ${NAMESPACE}
+
+  02-apply-configmaps:
+    desc: "Apply both the configmaps"
+    cmds:
+      - kubectl apply -f configmap-files.yaml
+      - kubectl apply -f configmap-property.yaml
+    # View using `kubectl get cm`
+
+  03-apply-pod:
+    desc: "Apply the pod which will use the configmaps"
+    cmds:
+      - kubectl apply -f pod.yaml
+    # obtain a shell on the container using `kubectl exec `
+
+  04-check-conf-file:
+    desc: "Check the conf.yaml file the pod consumed from configmap-files and saved in /etc/config directory"
+    cmds:
+      - kubectl exec nginx-pod -c nginx -- cat /etc/config/conf.yaml
+
+  05-check-property:
+    desc: "Check the properties consumed from configmap-property by running `printenv`"
+    cmds:
+      - kubectl exec nginx-pod -c nginx -- printenv
+
+  06-delete-namespace:
+    desc: "Delete the namespace to clean up"
+    cmds:
+      - kubectl delete -f namespace.yaml

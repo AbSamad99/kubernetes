@@ -1,0 +1,29 @@
+version: "3"
+
+env:
+  NAMESPACE: stateful-set-ns
+
+tasks:
+  01-create-namespace:
+    desc: "Apply namespace and set as default"
+    cmds:
+      - kubectl apply -f namespace.yaml
+      - kubens ${NAMESPACE}
+
+  02-apply-stateful-set:
+    desc: "Apply the nginx-stateful-set"
+    cmds:
+      - kubectl apply -f nginx-stateful-set.yaml
+      - watch "kubectl get pods"
+    # Hit Ctrl+C to come out of the watch command
+
+  03-apply-service:
+    desc: "Apply the nginxs-service"
+    cmds:
+      - kubectl apply -f nginxs-service.yaml
+    # To access each container individually, perform port forwarding: `kubectl port-forward nginx-stateful-set-{number} 8080:80`. Then access it on `localhost:8080`
+
+  04-delete-namespace:
+    desc: "Delete the namespace to clean up"
+    cmds:
+      - kubectl delete -f namespace.yaml

@@ -1,0 +1,19 @@
+# This creates a pod in each and every NODE that you have in your cluster. I believe this can be customized to run the containers on only certain nodes and not all.
+# This is great for collecting logs from all the pods running in that node and forwarding it wherever you need. The container we are using below is a open source tool used for data collection.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd
+  namespace: daemon-set-ns
+spec:
+  selector:
+    matchLabels:
+      app: fluentd
+  template:
+    metadata:
+      labels:
+        app: fluentd
+    spec:
+      containers:
+        - name: fluentd
+          image: fluentd:v1.16-1

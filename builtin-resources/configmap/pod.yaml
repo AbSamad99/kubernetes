@@ -1,0 +1,21 @@
+# Simple pod which consumes the configmaps
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.26.0
+      volumeMounts:
+        # mapping the volume to /etc/config
+        - name: configmap-files-ref
+          mountPath: /etc/config
+      envFrom:
+        - configMapRef:
+            name: configmap-property # Name of the ConfigMap we want to pull our values from. They will be saved as env vars.
+  volumes:
+    # Defining the volume and the ConfigMap we want to refer. This will create a volume with the name `configmap-files-ref`, which will contain files that we defined in `configmap-files`
+    - name: configmap-files-ref
+      configMap:
+        name: configmap-files
