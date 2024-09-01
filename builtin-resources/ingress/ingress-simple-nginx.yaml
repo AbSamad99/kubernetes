@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-simple-nginx
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "ingress-example-nginx.com"
+      http:
+        paths:
+          - path: / # Match all requests
+            pathType: ImplementationSpecific # Path matching behavior is determined by the Ingress controller implementation
+            backend:
+              service:
+                name: nginx-clusterip # Sends the traffic to this service
+                port:
+                  number: 80 # Which port to send the service to

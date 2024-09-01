@@ -1,0 +1,56 @@
+version: "3"
+
+env:
+  NAMESPACE: ingress-ns
+  BORDER: double
+  BORDER_FOREGROUND: "212"
+  PADDING: "1 1"
+  MARGIN: "1 1"
+
+tasks:
+  01-create-namespace:
+    desc: "Apply namespace and set as default"
+    cmds:
+      - kubectl apply -f namespace.yaml
+      - kubens ${NAMESPACE}
+
+  02-apply-deployment:
+    desc: "Apply the deployment"
+    cmds:
+      - kubectl apply -f deployment.yaml
+
+  03-apply-service-and-minimal-gke-ingress:
+    desc: "Apply the NodePort Service and GKE Ingress"
+    cmds:
+      - kubectl apply -f nodeport.yaml
+      - kubectl apply -f ingress-simple-gke.yaml
+      - cmd: gum style "💡 Add /etc/hosts entry (or set up a real DNS name pointing to LoadBalancer IP address) to access via host"
+        silent: true
+
+  # In steps 4 and 5, we are installing a custom ingress controller within our cluster itself, which will allow us to route traffic to clusterip services instead of nodeport.
+  # We are using a popular 3rd party implementation by nginx. Note that we do not create the ingress controller within the same namespace as the depoyment but in it's own namespace.
+  04-install-nginx-ingress-controller:
+    desc: "Install nginx ingress controller"
+    cmds:
+      # Will learn about helm later
+      - |
+        helm upgrade --install ingress-nginx ingress-nginx \
+          --repo https://kubernetes.github.io/ingress-nginx \
+          --namespace ingress-nginx \
+          --create-namespace \
+          --version 4.10.1
+
+  05-apply-service-and-minimal-nginx-ingress:
+    desc: "Apply the ClusterIP Service and Ingress"
+    cmds:
+      - kubectl apply -f clusterip.yaml
+      - kubectl apply -f ingress-simple-nginx.yaml
+      - cmd: gum style "💡 Add /etc/hosts entry (or set up a real DNS name pointing to LoadBalancer IP address) to access via host"
+        silent: true
+
+  06-delete-namespace:
+    desc: "Delete the namespace and ingress to clean up"
+    cmds:
+      - kubectl delete -f namespace.yaml
+      - kubectl delete namespace ingress-nginx
+      - kubectl delete ingress --all

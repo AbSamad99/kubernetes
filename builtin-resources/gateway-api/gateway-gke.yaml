@@ -1,0 +1,16 @@
+# This is a more advanced form of ingress, which has support for more than just http/https protocols.
+# Here we are using the default built in gke gateway, at the time of writing this it does not have support for tcp but will do so in the future.
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: Gateway
+metadata:
+  name: gke
+spec:
+  gatewayClassName: gke-l7-global-external-managed # provisioning layer 7 external load balancer, refer the following for more types: https://cloud.google.com/kubernetes-engine/docs/how-to/gatewayclass-capabilities
+  listeners:
+    # Listening for http traffic on port 80 and setting HTTPRoute as the allowed route.
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        kinds:
+          - kind: HTTPRoute

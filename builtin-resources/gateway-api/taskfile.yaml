@@ -1,0 +1,30 @@
+version: "3"
+
+env:
+  NAMESPACE: gateway-ns
+
+tasks:
+  01-create-namespace:
+    desc: "Apply namespace and set as default"
+    cmds:
+      - kubectl apply -f namespace.yaml
+      - kubens ${NAMESPACE}
+
+  02-apply-deployment-and-service:
+    desc: "Apply the deployment and nodeport service"
+    cmds:
+      - kubectl apply -f deployment.yaml
+      - kubectl apply -f nodeport.yaml
+
+  03-apply-gateway-route-gke:
+    desc: "Apply the necessary gateway resources to route traffic to the example deployment using GKE Gateway controller"
+    cmds:
+      - kubectl apply -f gateway-gke.yaml
+      - kubectl apply -f httproute-gke.yaml
+    # There are a lot more implementations for the gateway api, refer the following for additional types: https://github.com/sidpalas/devops-directive-kubernetes-course/tree/main/04-built-in-resource-types/GatewayAPI
+    # Verify gateway and httproute with `kubectl get gateway` and `kubectl get httproute`
+
+  04-delete-namespace:
+    desc: "Delete the namespace and ingress to clean up"
+    cmds:
+      - kubectl delete -f namespace.yaml

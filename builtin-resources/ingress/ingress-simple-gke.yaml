@@ -1,0 +1,23 @@
+# Ingress typically only has support for layer 7 protocols like http and https
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-simple-gke
+  # GCP still used old way to provision the ingress controllers via annotation
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    # kubernetes.io/ingress.class: "gce-internal" (for traffic external to cluster but internal to VPC)
+spec:
+  # NOTE: You can't use spec.ingressClassName for GKE ingress
+  rules:
+    # Notice that you can have multiple rules instead of just one.
+    - host: "ingress-example-gke.com" # In production, you would have a domain that you own here. All traffic to the domain mentioned would be handled by this rule.
+      http:
+        paths:
+          - path: / # Match all requests
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-nodeport # Sends the traffic to this service
+                port:
+                  number: 80 # Which port to send the service to
