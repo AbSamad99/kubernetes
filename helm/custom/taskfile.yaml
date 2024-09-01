@@ -1,0 +1,32 @@
+version: "3"
+
+env:
+  NAMESPACE: chart-ns
+
+tasks:
+  01-create-namespace:
+    desc: "Create a namespace for these examples and set as default"
+    cmds:
+      - kubectl apply -f Namespace.yaml
+      - kubens ${NAMESPACE}
+
+  # This is to show you how you can create a base chart which you can configure as you like
+  02-create-helm-chart:
+    desc: "Creating a simple unmodified chart"
+    cmds:
+      - helm create minimal-unmodified
+
+  03-install-default-values:
+    cmds:
+      - helm upgrade --install minimal ./minimal
+    desc: Install with default values
+
+  04-install-alt-values:
+    cmds:
+      - helm upgrade --install minimal ./minimal --values=./minimal/values-alt.yaml
+    desc: Install with alternative values
+
+  05-delete-namespace:
+    desc: "Delete the namespace to clean up"
+    cmds:
+      - kubectl delete -f Namespace.yaml

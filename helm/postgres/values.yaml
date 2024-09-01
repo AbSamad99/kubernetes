@@ -1,0 +1,10 @@
+# This the the file we will use to pass in custom values to the postgres helm chart. Verify by running `k get sts postgresql -o yaml | yq ".metadata.annotations"`
+commonAnnotations:
+  syed: abdussamad
+
+# Passing in the username and password
+postgresql:
+  auth:
+    postgresPassword: "postgres"
+    username: "user"
+    password: "userpassword"

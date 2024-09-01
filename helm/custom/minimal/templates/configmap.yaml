@@ -1,0 +1,14 @@
+# This is a helm template file which pulls in all the values from various files
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helm-{{ .Release.Name }}-configmap
+data:
+  appVersion: {{ .Chart.AppVersion }} # pulled from Chart.yaml
+  environment: {{ .Values.environment | quote }} # pulled from values.yaml
+  envShort: {{ template "envShort" . }} # pulled from _helpers.tpl??
+  {{- range .Values.configData }} # we loop over the objects under configData in values.yaml and if the object does not have element 'enabled: true', we do not add the key and value from said object. 
+  {{- if .enabled }}
+  {{ .key }}: {{ .value | quote }}
+  {{- end }}
+  {{- end }}
