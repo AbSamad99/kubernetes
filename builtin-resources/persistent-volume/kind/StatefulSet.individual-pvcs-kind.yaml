@@ -1,0 +1,48 @@
+# This is how you would dynamically provision a volume to be used in your containers. Here you do not need to mention a pv or pvc to use as all that is provisioned dynamically for you.
+# Each container in this set will have it's own volume rather having the same volume be shared between the containers. Check the pv and pvc in kubectl to verify.
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: individual-pvcs-kind
+spec:
+  serviceName: "nginx"
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-sts-kind
+  template:
+    metadata:
+      labels:
+        app: nginx-sts-kind
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.26.0
+          ports:
+            - containerPort: 80
+            # Mount the volume below to this path
+          volumeMounts:
+            - name: data
+              mountPath: /some/mount/path
+  volumeClaimTemplates:
+    # Specifies the storage class to be used to dynamically provision the volumes
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 50Mi
+        storageClassName: "standard"
+---
+# Headless service needed for the stateful set
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: individual-pvcss
+spec:
+  clusterIP: None
+  selector:
+    app: nginx-sts-kind

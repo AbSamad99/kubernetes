@@ -1,0 +1,50 @@
+# Here we are manually defining a volume which can be used in the pods. This is different from dynamic where we only need to define the persistent volume claim and kubernetes will provision the volume for us.
+# We are defining volume for each of the kind workder node.
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: manual-kind-worker
+  labels:
+    name: manual-kind # This is the label which is used to map to the persistent volume claim
+spec:
+  accessModes:
+    - ReadWriteOnce # Only able to read/write a single time
+  capacity:
+    storage: 100Mi
+  storageClassName: standard # Run `kubectl get storageclass`, this will give you the list of storage classes you can use. Kind has the `standard` storageclass by default.
+  local:
+    path: /some/path/in/container # Replace with the path to your local storage in container
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        # This option specifies the node on which the volume will be accessed
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - kind-worker
+---
+# Repeat of above but for kind worker node 2
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: manual-kind-worker2
+  labels:
+    name: manual-kind
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 100Mi
+  storageClassName: standard
+  local:
+    path: /some/path/in/container # Replace with the path to your local storage
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - kind-worker2

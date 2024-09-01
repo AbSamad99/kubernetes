@@ -1,0 +1,17 @@
+# Here the pod consumes the persistent volume claim. This claim in turn allows it to gain access the the volume specified in pvc.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: manual-pv-and-pvc
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.26.0
+      volumeMounts:
+        - name: storage
+          mountPath: /some/mount/path
+  volumes:
+    - name: storage
+      persistentVolumeClaim:
+        claimName: manual-pv-kind # Name of the pvc

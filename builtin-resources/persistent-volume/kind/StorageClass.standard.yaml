@@ -1,0 +1,11 @@
+# This is how you would typically provision a storageclass to be used in pv.
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard-2
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: rancher.io/local-path # Provisions the storage. Different providers will have different provisioners
+reclaimPolicy: Delete # pv created using this sc will be deleted after the pvc releases it's claim to the pv
+volumeBindingMode: WaitForFirstConsumer # Bind the pv created with this sc to the first pvc that asks for it.

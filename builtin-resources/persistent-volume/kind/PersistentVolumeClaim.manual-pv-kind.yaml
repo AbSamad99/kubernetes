@@ -1,0 +1,16 @@
+# Here we define a claim to the volume. This claim can then be used by the pods to gain access to the volume.
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: manual-pv-kind
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi # Consuming 100 Mi from the volume
+  selector:
+    matchLabels:
+      name: manual-kind # label of the volume to match
+  storageClassName: standard

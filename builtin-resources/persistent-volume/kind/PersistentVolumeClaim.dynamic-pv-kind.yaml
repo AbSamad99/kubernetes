@@ -1,0 +1,15 @@
+# Here we do not specify the name of the persistent volume to be used, only the storage class. This is because kubernetes will provision the volume dynamically.
+# NOTE: When you apply this file by running step 3 in the taskfile and run `kubectl get pvc`, you will see that this pvc will consume the pv created in step 2. This implies that only volumes that are
+# already created will be mapped to the pvc. If there is pv available, the pvc will not be be bound to any pv and will be in pending state.
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dynamic-pv-kind
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: standard
