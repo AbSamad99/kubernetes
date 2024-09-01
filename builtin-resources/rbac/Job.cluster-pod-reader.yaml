@@ -1,0 +1,17 @@
+# This job fetches all the pods running in a the entire cluster. To view the output run `kubectl logs <job-name>`
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cluster-pod-permissions
+spec:
+  template:
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - name: kubectl
+          image: cgr.dev/chainguard/kubectl
+          args: ["get", "pods", "-A"]
+      serviceAccountName: cluster-pod-reader
+      restartPolicy: Never
+  backoffLimit: 1

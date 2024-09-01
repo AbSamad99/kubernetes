@@ -1,0 +1,17 @@
+# Job which will fail. This is because the service account specified does not have the necessary privileges to view pods cluster-wide.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: namespaced-pod-permissions-fail
+spec:
+  template:
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - name: kubectl
+          image: cgr.dev/chainguard/kubectl
+          args: ["get", "pods", "-A"]
+      serviceAccountName: namespaced-pod-reader
+      restartPolicy: Never
+  backoffLimit: 1

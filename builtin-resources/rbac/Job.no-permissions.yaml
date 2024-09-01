@@ -1,0 +1,15 @@
+# Job which will fail. This is because we are not specifying the service account to use, causing the job to use the default service account which does not have the necessary privileges.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: no-permissions
+spec:
+  template:
+    spec:
+      containers:
+        - name: kubectl
+          image: cgr.dev/chainguard/kubectl
+          args: ["get", "pods", "-A"]
+      restartPolicy: Never
+  backoffLimit: 1 # Try 1 more time before giving up
