@@ -1,1 +1,1 @@
-All the code is taken directly as is from https://github.com/sidpalas/devops-directive-kubernetes-course/tree/main/04-built-in-resource-types/RBAC with only minor modifications. I have added comments to the yaml files for future reference.
+All the code is taken directly as is from https://github.com/abdsyed/kubernetes/tree/main/04-built-in-resource-types/RBAC with only minor modifications. I have added comments to the yaml files for future reference.

@@ -21,7 +21,7 @@ tasks:
     cmds:
       - kubectl apply -f gateway-gke.yaml
       - kubectl apply -f httproute-gke.yaml
-    # There are a lot more implementations for the gateway api, refer the following for additional types: https://github.com/sidpalas/devops-directive-kubernetes-course/tree/main/04-built-in-resource-types/GatewayAPI
+    # There are a lot more implementations for the gateway api, refer the following for additional types: https://github.com/abdsyed/kubernetes/tree/main/04-built-in-resource-types/GatewayAPI
     # Verify gateway and httproute with `kubectl get gateway` and `kubectl get httproute`
 
   04-delete-namespace:
