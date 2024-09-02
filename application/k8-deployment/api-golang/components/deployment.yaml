@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: golang-api
+  namespace: app-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: golang-pod
+  template:
+    metadata:
+      labels:
+        app: golang-pod
+    spec:
+      containers:
+        # Runs the golang-api
+        - name: golang
+          image: abdsyed/kubernetes-api-golang:foobarbaz
+          # Setting env directly
+          env:
+            - name: PORT
+              value: "8000"
+          # Setting env from secret
+          envFrom:
+            - secretRef:
+                name: golang-db-url
+          # Exposing the container port
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          # Health check
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 8000
+          resources:
+            limits:
+              memory: "100Mi"
+            requests:
+              memory: "100Mi"
+              cpu: "50m"
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault

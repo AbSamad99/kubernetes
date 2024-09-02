@@ -1,0 +1,22 @@
+# Another custom component by traefik. This configuration basically forwards all http traffic where the prefix is '/api/node' to the 'node-service' service.
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: node-ingress
+  namespace: app-ns
+spec:
+  entryPoints:
+    - web
+  routes:
+    - kind: Rule
+      # You would replace the host option below with your domain. Alternatively you can edit your hosts file.
+      match: Host(`kubernetes-course.devopsdirective.com`) && PathPrefix(`/api/node`)
+      # Making use of the middleware we had created in the common tasks. Basically removing `/api/go` from the request so the node-api only sees request on route `/`
+      middlewares:
+        - name: strip-api-prefixes
+      # The service to which this route is tied to
+      services:
+        - kind: Service
+          name: node-service
+          port: 3000
+          scheme: http

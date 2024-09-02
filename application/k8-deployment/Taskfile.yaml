@@ -1,0 +1,42 @@
+version: "3"
+
+includes:
+  common:
+    dir: ./common
+    taskfile: ./common/Taskfile.yaml
+  postgresql:
+    dir: ./postgresql
+    taskfile: ./postgresql/Taskfile.yaml
+  api-golang:
+    dir: ./api-golang
+    taskfile: ./api-golang/Taskfile.yaml
+  api-node:
+    dir: ./api-node
+    taskfile: ./api-node/Taskfile.yaml
+  client-react:
+    dir: ./client-react
+    taskfile: ./client-react/Taskfile.yaml
+  load-generator-python:
+    dir: ./load-generator-python
+    taskfile: ./load-generator-python/Taskfile.yaml
+
+tasks:
+  apply-all:
+    desc: Apply the entire setup
+    cmds:
+      - task: common:01-create-namespace
+      - task: postgresql:01-download-and-install-postgres
+      - task: postgresql:02-apply-secret-and-job
+      - task: common:02-add-and-deploy-traefik
+      - task: common:03-apply-traefik-middleware
+      - task: api-golang:apply
+      - task: api-node:apply
+      - task: client-react:apply
+      - task: load-generator-python:apply
+
+  destroy-all:
+    desc: Destroy the setup
+    cmds:
+      - task: common:04-remove-app-ns
+      - task: common:05-remove-traefik-namespace
+      - task: postgresql:03-delete-postgres-ns

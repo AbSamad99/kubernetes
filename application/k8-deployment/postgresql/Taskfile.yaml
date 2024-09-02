@@ -1,0 +1,29 @@
+version: "3"
+
+tasks:
+  # Deploying postgres db in it's own namespace and container
+  01-download-and-install-postgres:
+    desc: Download and install postgresql using helm
+    cmds:
+      - helm repo add bitnami https://charts.bitnami.com/bitnami
+      # Notice in the command below we are using both the values.yaml file and also setting the auth.postgresPassword directly.
+      # I personally think specifying it in values.yaml is better for versioning purposes but this could lead to credential leaks.
+      - |
+        helm upgrade --install \
+        -n postgres \
+        postgresql bitnami/postgresql \
+        --values values.yaml \
+        --set auth.postgresPassword=foobarbaz \
+        --create-namespace \
+        --version 15.3.2
+
+  02-apply-secret-and-job:
+    desc: Apply the secret.yaml and job.yaml files
+    cmds:
+      - kubectl apply -f secret.yaml
+      - kubectl apply -f job.yaml
+
+  03-delete-postgres-ns:
+    desc: Delete the postgres namespace for cleanup
+    cmds:
+      - kubectl delete ns postgres

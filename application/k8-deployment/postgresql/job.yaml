@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrator
+  namespace: app-ns
+spec:
+  template:
+    spec:
+      containers:
+        - name: migrate
+          image: abdsyed/kubernetes-db-migrator:foobarbaz
+          # Here we are not specifying the command as we already defined the default command when building the image. We only need to pass in the arguments that the command expects.
+          args:
+            - -path=/app/migrations
+            - -database=$(DATABASE_URL)?sslmode=disable
+            - up
+          # Pulling values we defined in the secret.yaml
+          envFrom:
+            - secretRef:
+                name: db-password
+      restartPolicy: OnFailure

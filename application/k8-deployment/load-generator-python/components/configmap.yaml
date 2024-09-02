@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: python-config
+  namespace: app-ns
+data:
+  # We are using the internal cluster resolution here
+  API_URL: http://node-service.app-ns.svc.cluster.local:3000
+  # API_URL: http://golang-service.app-ns.svc.cluster.local:8000
+  DELAY_MS: "500"

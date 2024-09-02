@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-pod
+  namespace: app-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: react-pod
+  template:
+    metadata:
+      labels:
+        app: react-pod
+    spec:
+      containers:
+        - name: react
+          image: abdsyed/kubernetes-client-react-nginx:foobarbaz
+          resources:
+            limits:
+              memory: 100Mi
+            requests:
+              cpu: 50m
+              memory: 100Mi
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3 # Try three times before marking as failed
+            httpGet:
+              path: /ping
+              port: 8080
+          # Using the volume we defined below
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d
+              name: nginx-config-ref
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        # Using the configmap we defined
+        - configMap:
+            name: nginx-config # Name of the configmap we defined
+            defaultMode: 420 # Permissions
+          name: nginx-config-ref # The name we will reference in the volume mount

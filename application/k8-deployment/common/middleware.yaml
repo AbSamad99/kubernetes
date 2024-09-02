@@ -1,0 +1,13 @@
+# This is a custom component created by traefik used as a middleware for various functions. In this case we are using it to strip '/app/node' and '/app/golang' from traffic.
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-api-prefixes
+  namespace: app-ns
+spec:
+  # Stripping the prefixes below from the request.
+  stripPrefix:
+    forceSlash: false
+    prefixes:
+      - /api/node
+      - /api/golang

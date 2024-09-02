@@ -1,0 +1,30 @@
+version: "3"
+
+tasks:
+  01-create-namespace:
+    desc: Create the namespace to use for the entire setup.
+    cmds:
+      - kubectl apply -f namespace.yaml
+      - kubens app-ns
+
+  # Make sure you not down the External IP of the deployed load balancer and add it to your hosts file agains the domain name you have chose. Command: `k get svc -n traefik`
+  02-add-and-deploy-traefik:
+    desc: Add traefik load balancer using helm and deploy it
+    cmds:
+      - helm repo add traefik https://traefik.github.io/charts
+      - helm upgrade --install -n traefik --create-namespace traefik traefik/traefik --version 20.8.0
+
+  03-apply-traefik-middleware:
+    desc: Deploy traefik middleware
+    cmds:
+      - kubectl apply -f middleware.yaml
+
+  04-remove-app-ns:
+    desc: Delete the app-ns namespace
+    cmds:
+      - kubectl delete -f namespace.yaml
+
+  05-remove-traefik-namespace:
+    desc: Remove the traefik namespace
+    cmds:
+      - kubectl delete ns traefik

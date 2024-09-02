@@ -1,0 +1,34 @@
+# We do not use a service for this deployment as it does not have to be routeable
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-pod
+  namespace: app-ns
+spec:
+  selector:
+    matchLabels:
+      app: python-pod
+  template:
+    metadata:
+      labels:
+        app: python-pod
+    spec:
+      containers:
+        - name: python-pod
+          image: abdsyed/kubernetes-load-generator-python:foobarbaz
+          resources:
+            limits:
+              memory: "50Mi"
+            requests:
+              memory: "50Mi"
+              cpu: "100m"
+          envFrom:
+            - configMapRef:
+                name: python-config
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault

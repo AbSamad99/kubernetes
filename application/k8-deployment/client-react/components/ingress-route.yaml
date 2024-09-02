@@ -1,0 +1,17 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: react-ingress
+  namespace: app-ns
+spec:
+  entryPoints:
+    - web
+  routes:
+    # Here we are directly matching our "domain". So all request to the `/` route of the domain below will be forwareded to the react-service.
+    - kind: Rule
+      match: Host(`kubernetes-course.devopsdirective.com`)
+      services:
+        - kind: Service
+          name: react-service
+          port: 8080
+          scheme: http

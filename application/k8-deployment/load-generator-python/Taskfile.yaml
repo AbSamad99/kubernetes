@@ -1,0 +1,6 @@
+version: 3
+
+tasks:
+  apply:
+    desc: Apply all the files present in the directory
+    cmd: kubectl apply -f ./components
