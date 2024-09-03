@@ -1,0 +1,10 @@
+# Takes a backup of the db right away. Reference: https://cloudnative-pg.io/documentation/1.22/cloudnative-pg.v1/#postgresql-cnpg-io-v1-Backup
+apiVersion: postgresql.cnpg.io/v1
+kind: Backup
+metadata:
+  name: now-0
+  namespace: cnpg-ns
+spec:
+  method: barmanObjectStore
+  cluster:
+    name: cnpg-with-backup-config

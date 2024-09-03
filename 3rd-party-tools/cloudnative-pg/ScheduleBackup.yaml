@@ -1,0 +1,11 @@
+# Performs backup at each midnight. Reference: https://cloudnative-pg.io/documentation/1.22/cloudnative-pg.v1/#postgresql-cnpg-io-v1-ScheduledBackup
+
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: daily
+spec:
+  schedule: "0 0 4 * * *" # Reference: https://pkg.go.dev/github.com/robfig/cron#hdr-CRON_Expression_Format
+  backupOwnerReference: self
+  cluster:
+    name: cnpg-with-backup-config

@@ -1,0 +1,80 @@
+version: 3
+
+env:
+  BORDER: double
+  BORDER_FOREGROUND: "212"
+  PADDING: "1 1"
+  MARGIN: "1 1"
+  NAMESPACE: cnpg-ns
+
+tasks:
+  01-create-namespace:
+    desc: "Create a namespace for these examples and set as default"
+    cmds:
+      - kubectl apply -f Namespace.yaml
+      - kubens ${NAMESPACE}
+
+  # Installing the controller necessary to manage the custom resources we will be deploying (clusters). Reference: https://github.com/cloudnative-pg/charts
+  02-install-cnpg-operator:
+    desc: "Install cloudnative-pg operator"
+    cmds:
+      - "helm repo add cnpg https://cloudnative-pg.github.io/charts"
+      - |
+        helm upgrade --install cnpg \
+          --namespace cnpg-system \
+          --create-namespace \
+          cnpg/cloudnative-pg
+
+  # Deploying pg cluster with no backups
+  03-apply-minimal-cluster:
+    desc: "Apply minimal cnpg cluster definition"
+    cmds:
+      - kubectl apply -f Cluster.cnpg-minimal.yaml
+
+  # Create google bucket for backups
+  04-create-google-cloud-storage-bucket:
+    desc: "Create a google cloud storage bucket for backups"
+    vars:
+      BUCKET_NAME: kubernetes-syed-cnpg-backups
+    cmds:
+      - gcloud storage buckets create gs://{{.BUCKET_NAME}}
+
+  # IAM accounts to access the bucket
+  05-create-iam-service-account:
+    desc: "Create GCP IAM service account and attach necessary permissions"
+    vars:
+      BUCKET_NAME: kubernetes-syed-cnpg-backups
+    cmds:
+      # Create service account
+      - |
+        gcloud iam service-accounts create cnpg-backups \
+          --display-name "Cloud Native PG Service Account"
+
+      # Attach roles to the service account
+      - |
+        gsutil iam ch \
+          serviceAccount:cnpg-backups@kubernetes-syed.iam.gserviceaccount.com:roles/storage.objectAdmin \
+          gs://{{.BUCKET_NAME}}
+        gsutil iam ch \
+          serviceAccount:cnpg-backups@kubernetes-syed.iam.gserviceaccount.com:roles/storage.legacyBucketReader \
+          gs://{{.BUCKET_NAME}}
+
+      # Adding the service account to the cnpg-ns namespace
+      - |
+        gcloud iam service-accounts add-iam-policy-binding cnpg-backups@kubernetes-syed.iam.gserviceaccount.com \
+          --role roles/iam.workloadIdentityUser \
+          --member "serviceAccount:kubernetes-syed.svc.id.goog[cnpg-ns/cnpg-with-backup-config]"
+
+  # Deploying pg cluster with backups
+  06-apply-cluster-with-backup-config-gcp:
+    desc: "Apply cnpg cluster definition with backup configuration"
+    cmds:
+      - kubectl apply -f Cluster.cnpg-with-backup-config-gcp.yaml
+      - kubectl apply -f ScheduleBackup.yaml
+      - kubectl apply -f Backup.yaml
+
+  07-delete-namespaces:
+    desc: "Delete the namespace to clean up"
+    cmds:
+      - kubectl delete -f Namespace.yaml
+      - kubectl delete ns cnpg-system
