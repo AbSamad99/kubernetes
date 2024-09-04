@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-service
+  namespace: app-ns
+spec:
+  replicas: "{{ .Values.replicas }}"
+  selector:
+    matchLabels:
+      app: node-pod
+  template:
+    metadata:
+      labels:
+        app: node-pod
+    spec:
+      containers:
+        - name: node
+          image: abdsyed/kubernetes-api-node:{{ .Values.version }}
+          resources:
+            limits:
+              memory: "100Mi"
+            requests:
+              memory: "100Mi"
+              cpu: "50m"
+          ports:
+            - protocol: TCP
+              containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+          envFrom:
+            - secretRef:
+                name: node-db-url
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 3000
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault

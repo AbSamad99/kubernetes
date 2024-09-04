@@ -1,0 +1,27 @@
+version: 3
+
+tasks:
+  render-default:
+    desc: Render chart with the default values
+    cmds:
+      - helm template ./api-node-helm-chart | yq
+
+  render-staging:
+    desc: Render chart with the staging values
+    cmds:
+      - helm template ./api-node-helm-chart --values=./api-node-helm-chart/values.staging.yaml | yq
+
+  render-production:
+    desc: Render chart with the production values
+    cmds:
+      - helm template ./api-node-helm-chart --values=./api-node-helm-chart/values.production.yaml | yq
+
+  package-chart:
+    desc: Package the chart to a tgz file
+    cmds:
+      - helm package ./api-node-helm-chart
+
+  push-chart:
+    desc: Push the created chart to an OCI repo, in our case docker
+    cmds:
+      - helm push api-node-helm-chart-0.0.1.tgz oci://registry-1.docker.io/abdsyed

@@ -7,3 +7,6 @@ kind-config.yaml
 
 # VSCode Config
 .vscode
+
+# Archives
+*.tgz

@@ -1,0 +1,4 @@
+# Default values which will be applied for the helm deployment
+environmentPostfix: ""
+replicas: 1
+version: DEFAULT
