@@ -1,8 +1,12 @@
+# Loading custom ko builder
 load('ext://ko', 'ko_build')
+# building with ko
 ko_build(
   'abdsyed/kubernetes-api-golang', 
   './',
   deps=['.']
 )
-k8s_yaml('../../07-deploying-demo-application/api-golang/Deployment.yaml')
-k8s_resource('api-golang', port_forwards=8000)
+# path to the deployment which consumes the image being built above
+k8s_yaml('../../k8-deployment/api-golang/components/deployment.yaml')
+# port forwarding so we can access it
+k8s_resource('golang-api', port_forwards=8000)

@@ -1,0 +1,6 @@
+# Include the tilt files from we have the application, check the golang tilt file for detailed comments.
+
+include('../../application/code/api-golang/Tiltfile')
+include('../../application/code/api-node/Tiltfile')
+include('../../application/code/client-react/Tiltfile')
+include('../../application/code/load-generator-python/Tiltfile')
