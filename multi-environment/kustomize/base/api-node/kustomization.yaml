@@ -1,0 +1,9 @@
+# Specifies all the files to use, check each of these files for more comments
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: multi-ns
+resources:
+  - deployment.yaml
+  - secret.yaml
+  - service.yaml
+  - ingress-route.yaml

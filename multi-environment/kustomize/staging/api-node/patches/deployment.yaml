@@ -1,0 +1,14 @@
+# In this patch, we just have to specify the identifying information of the resource and then the fields which you would like to modify or add.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-service
+  namespace: app-ns
+spec:
+  replicas: 1 # Using just 1 replica for stating environment
+  template:
+    spec:
+      containers:
+        - name: node
+          image: abdsyed/kubernetes-api-node:STAGING # Specifying to use the image which is tagged with STAGING

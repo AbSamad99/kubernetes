@@ -1,0 +1,18 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: node-ingress
+  namespace: multi-ns
+spec:
+  entryPoints:
+    - web
+  routes:
+    - kind: Rule
+      match: # FILLED IN WITH HELP OF KUSTOMIZE PATCHES
+      middlewares:
+        - name: strip-api-prefixes
+      services:
+        - kind: Service
+          name: node-service
+          port: 3000
+          scheme: http

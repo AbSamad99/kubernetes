@@ -1,0 +1,14 @@
+# In this patch, we just have to specify the identifying information of the resource and then the fields which you would like to modify or add.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-service
+  namespace: app-ns
+spec:
+  replicas: 3 # Increasing the number of replicas to 3
+  template:
+    spec:
+      containers:
+        - name: node
+          image: abdsyed/kubernetes-api-node:PRODUCTION # Specifying to use the image which is tagged with PRODUCTION

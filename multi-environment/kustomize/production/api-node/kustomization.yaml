@@ -1,0 +1,16 @@
+# specifies the path to the base yaml files, as well as the paths to the patches.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: multi-ns
+resources:
+  - ../../base/api-node/ # Base yaml file location
+patches:
+  - path: ./patches/deployment.yaml
+  # Notice for this we have to specify the type of resource, it's name and version here so the corresponding patch will be able to modify the correct field.
+  - path: ./patches/ingress-route.replace-match.yaml
+    target:
+      group: traefik.containo.us
+      kind: IngressRoute
+      name: node-ingress
+      namespace: multi-ns
+      version: v1alpha1

@@ -1,0 +1,6 @@
+# Main kustomize file which imports the api-node dir. This serves as the baseline on top of which patches for production and staging are applied
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: multi-ns
+resources:
+  - api-node

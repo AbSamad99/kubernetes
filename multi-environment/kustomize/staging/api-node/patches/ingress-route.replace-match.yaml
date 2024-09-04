@@ -1,0 +1,5 @@
+# Specifying the match property which we did not specify in the base ingress-route.yaml file. Notice that this is different from the changes we made to the deployment. This may be due to the ingress being a custom component.
+
+- op: replace
+  path: /spec/routes/0/match # path of the resource to modify in the original yaml file
+  value: "Host(`kubernetes-course.devopsdirective-staging.com`) && PathPrefix(`/api/node`)"

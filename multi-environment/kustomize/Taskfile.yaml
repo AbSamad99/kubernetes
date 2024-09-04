@@ -1,0 +1,14 @@
+version: "3"
+
+# Verifying if the patches get applied or not
+
+tasks:
+  render-staging:
+    desc: "Render staging configuration"
+    cmds:
+      - kubectl kustomize ./staging | yq
+
+  render-production:
+    desc: "Render production configuration"
+    cmds:
+      - kubectl kustomize ./production | yq
