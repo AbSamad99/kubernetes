@@ -1,0 +1,96 @@
+# Be sure to check the github actions marketplace for more types of 3rd-party actions.
+
+name: build-images
+
+on:
+  # Defines the criteria of when to execute the workflow
+  push:
+    branches:
+      - "main"
+    tags:
+      - "[0-9]*.[0-9]*.[0-9]*"
+    paths:
+      # Specifying which folder has to be watched for changes
+      - "application/code/**/*"
+
+jobs:
+  generate-image-tag:
+    runs-on: ubuntu-latest # Run this job on the latest version of ubuntu
+    outputs:
+      image_tag: ${{ steps.generate-image-tag.outputs.image_tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Necessary to get all git tags for IMAGE_TAG generation with git describe
+          fetch-depth: 0
+
+      # Install task tool
+      - name: Install Task
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+
+      # Generate the tag from the task in the Taskfile, then output it.
+      - name: Generate Image Tag
+        id: generate-image-tag
+        working-directory: github-actions
+        run: |
+          image_tag=$(task generate-version-tag)
+          echo "image_tag=$image_tag" >> $GITHUB_OUTPUT
+
+  build-tag-push:
+    runs-on: ubuntu-latest
+    needs: generate-image-tag # Run this only after generate-image-tag
+
+    # Create a job for each of the paths as the working directory
+    strategy:
+      matrix:
+        path:
+          - application/code/api-golang
+          - application/code/api-node
+          - application/code/client-react
+          - application/code/load-generator-python
+          - application/code/postgresql
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Install task tool
+      - name: Install Task
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+
+      # Used to build mult-arch images
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Log into docker hub to access and update the repositories
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Setting up go and ko specifically for api-golang image
+      - uses: actions/setup-go@v5
+        if: matrix.path == 'application/code/api-golang'
+        with:
+          go-version: "1.22.x"
+      - uses: ko-build/setup-ko@v0.6
+        if: matrix.path == 'application/code/api-golang'
+        with:
+          version: v0.15.4
+
+      # Use the taskfile present in each of the paths to build the container images
+      - name: Build Image
+        env:
+          IMAGE_TAG: ${{ needs.generate-image-tag.outputs.image_tag }} # Pull tag from the previous job
+        working-directory: ${{ matrix.path }}
+        # Passing in the image tag as an variable when running the task
+        run: |
+          task build-container-image-multi-arch IMAGE_TAG=${IMAGE_TAG}
