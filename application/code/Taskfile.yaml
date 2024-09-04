@@ -1,6 +1,6 @@
 version: "3"
 
-# Including the sub-task files
+# Including the sub-task files.
 includes:
   api-golang:
     taskfile: ./api-golang/Taskfile.yaml
